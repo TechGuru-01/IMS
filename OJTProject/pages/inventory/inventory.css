@@ -1,0 +1,120 @@
+
+.box-4{
+  overflow-y: auto;
+}
+.inventory-container {
+  margin: 30px auto;
+  width: 95%;
+  max-width: 1800px;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+}
+
+.inv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.inventory-table thead {
+  background: var(--primary-color) !important;
+}
+
+.inventory-table th {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+  padding: 18px 20px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  text-align: left;
+  border: none;
+}
+
+.inventory-table tbody tr {
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.inventory-table tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.inventory-table tbody tr:hover {
+  background-color: #f1f5f9;
+}
+
+.inventory-table td {
+  padding: 16px 20px;
+  color: #334155;
+  font-size: 0.95rem;
+  vertical-align: middle;
+}
+
+.inventory-table td:last-child {
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+button.opnbtn {
+  height: 40px;
+  padding: 0 25px;
+  background: var(--primary-color);
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+button.opnbtn:hover {
+  filter: brightness(1.2);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(15, 23, 42, 0.2);
+}
+.excel-btn {
+    background-color: #217346;
+    height: 40px;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.excel-btn:hover { background-color: #185c37; }
+.btn-container{
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
