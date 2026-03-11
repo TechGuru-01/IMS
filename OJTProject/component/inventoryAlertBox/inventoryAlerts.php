@@ -4,21 +4,28 @@ if (isset($_POST['acknowledge_id'])) {
     $id_to_update = intval($_POST['acknowledge_id']);
     $updateQuery = "UPDATE inventory SET is_acknowledged = 1 WHERE id = $id_to_update";
     if ($conn->query($updateQuery)) {
-        echo "<script>window.location.href=window.location.href;</script>";
+        // Mas malinis na redirect kaysa sa JS window.location
+        header("Location: " . $_SERVER['PHP_SELF']);
         exit();
     }
 }
 
-// 2. DATA QUERY
-$m = $_SESSION['selected_month'] ?? null;
-$y = $_SESSION['selected_year'] ?? (int)date('Y');
+// 2. DATA QUERY (FIXED: Defaulting to Last Selected / Current Date)
+// Sinisiguro natin na laging may value ang $m at $y para hindi mag-fail ang SQL filter
+$m = isset($_SESSION['selected_month']) ? (int)$_SESSION['selected_month'] : (int)date('n');
+$y = isset($_SESSION['selected_year']) ? (int)$_SESSION['selected_year'] : (int)date('Y');
+
+// Siguraduhin nating naka-save sa session para consistent sa ibang pages
+$_SESSION['selected_month'] = $m;
+$_SESSION['selected_year'] = $y;
 
 $alertSql = "SELECT id, item, description, cabinet, quantity, min_quantity 
              FROM inventory 
              WHERE quantity <= min_quantity 
-             AND is_acknowledged = 0 " . 
-             ($m !== null ? "AND MONTH(date_created) = $m AND YEAR(date_created) = $y " : "") . 
-             "ORDER BY quantity ASC";
+             AND is_acknowledged = 0 
+             AND MONTH(date_created) = $m 
+             AND YEAR(date_created) = $y 
+             ORDER BY quantity ASC";
 
 $alertResult = $conn->query($alertSql);
 $pendingCount = ($alertResult) ? $alertResult->num_rows : 0;
@@ -51,7 +58,7 @@ $pendingCount = ($alertResult) ? $alertResult->num_rows : 0;
                 <tr>
                     <th style="text-align: center; width: 80px;">Action</th>
                     <th>Item Name</th>
-                    <th>Cabinet</th>
+                    <th>Description</th> <th>Cabinet</th>
                     <th style="text-align: center;">Qty Left</th>
                     <th style="text-align: center;">Min</th>
                 </tr>
@@ -75,6 +82,9 @@ $pendingCount = ($alertResult) ? $alertResult->num_rows : 0;
                                     <span class="urgent-badge">OUT OF STOCK</span>
                                 <?php endif; ?>
                             </td>
+                            <td style="font-size: 0.85rem; color: #64748b; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                <?= htmlspecialchars($row['description']) ?>
+                            </td>
                             <td>
                                 <span style="background: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; color: #475569;">
                                     <?= htmlspecialchars($row['cabinet']) ?>
@@ -90,8 +100,7 @@ $pendingCount = ($alertResult) ? $alertResult->num_rows : 0;
                     <?php endwhile; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="5" class="empty-alert">
-                            <div style="margin: 30px 0; text-align: center;">
+                        <td colspan="6" class="empty-alert"> <div style="margin: 30px 0; text-align: center;">
                                 <span class="material-symbols-outlined" style="font-size: 3.5rem; color: #28a745; display: block; margin-bottom: 10px;">check_circle</span>
                                 <p style="font-weight: 600; color: #2d3748;">All stock levels are optimal.</p>
                             </div>

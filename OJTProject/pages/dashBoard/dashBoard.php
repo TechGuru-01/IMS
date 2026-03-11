@@ -1,9 +1,6 @@
 <?php
  require_once '../../include/auth_checker.php';
 ?>
-
-
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -14,7 +11,9 @@
     <link rel="stylesheet" href="../../component/currency/currency.css">
     <link rel="stylesheet" href="../../component/inventoryAlertBox/inventoryAlerts.css">
      <link rel="stylesheet" href="../../component/graphBox/graph.css">
+     <link rel="stylesheet" href="../../component/settings/settings.css">
      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />  
+     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 </head>
 <body>
       <?php
@@ -29,7 +28,9 @@
             <?php include __DIR__ . "/../../component/inventoryAlertBox/inventoryAlerts.php"; ?>
             <?php include __DIR__ . "/../../component/graphBox/graph.php"; ?> 
         </div>
+        <?php include __DIR__ . "/../../component/settings/settings.php"; ?>
     </section>
+    <script src="../../component/settings/settings.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
@@ -38,6 +39,6 @@
     </script>
 
     <script src="../../component/graphBox/chart.js"></script>
-  
+    
     </body>
 </html>

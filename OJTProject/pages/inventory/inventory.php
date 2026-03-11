@@ -53,6 +53,7 @@ include_once "carryOver.php";
                     
       
     </div>
+    
     <script src="inventory.js" defer></script>
     <script src="../../component/search.js" defer></script>
     <script src="../../component/sort.js" defer></script>

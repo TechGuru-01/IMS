@@ -14,9 +14,8 @@ if (isset($_POST['carryOverAction'])) {
     $lastMonth = ($currentMonth == 1) ? 12 : $currentMonth - 1;
     $lastYear = ($currentMonth == 1) ? $currentYear - 1 : $currentYear;
 
-    // 2. Kunin lahat ng items mula sa Last Month
-    // Gumamit tayo ng real_escape_string sa variables para safe sa SQL injection (kahit integer sila)
-    $sqlLastMonth = "SELECT category, item, description, cabinet, quantity, price, min_quantity 
+    // 2. Kunin lahat ng items mula sa Last Month (Dinagdag ang item_uuid sa SELECT)
+    $sqlLastMonth = "SELECT category, item, description, cabinet, quantity, price, min_quantity, item_uuid 
                      FROM inventory 
                      WHERE MONTH(date_created) = $lastMonth AND YEAR(date_created) = $lastYear";
     
@@ -31,23 +30,28 @@ if (isset($_POST['carryOverAction'])) {
             $min_qty = (int)$row['min_quantity'];
             $price = (float)$row['price'];
             
+            // --- UUID LOGIC ---
+            // Kung NULL ang uuid sa last month record, gawan na natin agad ng bago para hindi na mag-NULL
+            $item_uuid = (!empty($row['item_uuid'])) ? $row['item_uuid'] : uniqid('JIG-');
+            
             // LOGIC: Ang remaining quantity ay nagiging simula ng bagong buwan
             $beginning = (int)$row['quantity']; 
             $received = 0; 
             $totalQty = $beginning + $received;
             
-            $targetDate = "$currentYear-$currentMonth-01 00:00:00";
+            $targetDate = "$currentYear-" . str_pad($currentMonth, 2, "0", STR_PAD_LEFT) . "-01 00:00:00";
 
-            // 3. I-insert o I-update sa Current Month
-            // Ang ON DUPLICATE KEY UPDATE dito ay maganda para hindi nagdodoble ang record kung sakaling ma-click ulit
+            // 3. I-insert o I-update sa Current Month (Isinama ang item_uuid)
             $stmt = $conn->prepare("INSERT INTO inventory 
-                (category, item, description, cabinet, beginning_inventory, received_qty, quantity, min_quantity, price, date_created) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (category, item, description, cabinet, beginning_inventory, received_qty, quantity, min_quantity, price, date_created, item_uuid) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON DUPLICATE KEY UPDATE 
                 beginning_inventory = VALUES(beginning_inventory),
-                quantity = VALUES(beginning_inventory) + received_qty");
+                quantity = VALUES(beginning_inventory) + received_qty,
+                item_uuid = COALESCE(item_uuid, VALUES(item_uuid))");
             
-            $stmt->bind_param("ssssiiiids", $category, $item, $desc, $cabinet, $beginning, $received, $totalQty, $min_qty, $price, $targetDate);
+            // Bind 11 parameters: ssssiiiidss
+            $stmt->bind_param("ssssiiiidss", $category, $item, $desc, $cabinet, $beginning, $received, $totalQty, $min_qty, $price, $targetDate, $item_uuid);
             $stmt->execute();
         }
         $_SESSION['msg'] = "Carry over successful!";
@@ -59,3 +63,4 @@ if (isset($_POST['carryOverAction'])) {
     header("Location: inventory.php");
     exit();
 }
+?>

@@ -124,3 +124,11 @@ button.opnbtn {
 .qr-btn-container:hover {
   opacity: 0.8;
 }
+.modal-func {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  gap: 15px;
+  background: #fff;
+  padding: 10px 0;
+}

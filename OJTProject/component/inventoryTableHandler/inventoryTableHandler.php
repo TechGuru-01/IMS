@@ -12,9 +12,9 @@
                     <span class="material-symbols-outlined">search</span>
                     <input type="text" id="inventorySearch" placeholder="Search..." onkeyup="filterTable()">
                 </div>
-                <a href="inventoryAlertExport.php" style="text-decoration: none;">
-                    <button class="excel-btn">
-                        <span class="material-symbols-outlined">download</span>Purchase Request
+                <a href="/OJTProject/component/inventoryTableHandler/inventoryExport.php" style="text-decoration: none;">
+                    <button type="button" class="excel-btn">
+                        <span class="material-symbols-outlined">download</span> Export Inventory
                     </button>
                 </a>
                 <button id="openBtn" class="opnbtn">
@@ -35,7 +35,7 @@
                             <div class="th-content">
                                 <?php 
                                     $displayHeader = str_replace('_', ' ', $col);
-                                    echo ucfirst($displayHeader); 
+                                    echo ($col === 'is_acknowledged') ? 'Status' : ucfirst($displayHeader); 
                                 ?> 
                                 <span class="material-symbols-outlined" style="font-size: 16px;">unfold_more</span>
                             </div>
@@ -44,41 +44,24 @@
                     <th data-column="total_value">Total Value</th>
                 </tr>
             </thead>
-<tbody>
-    <?php 
-    $result->data_seek(0); 
-    while($row = $result->fetch_assoc()): 
-        $rowTotal = (float)$row['quantity'] * (float)$row['price'];
-        $isCritical = ($row['quantity'] <= $row['min_quantity']);
-    ?>
-        <tr data-id="<?= $row['id'] ?>" class="<?= $isCritical ? 'critical-row' : '' ?>">
-            <?php foreach($cols as $col): ?>
-                <td>
-                    <?php 
-                        if ($col === 'price') {
-                            echo "₱" . number_format($row[$col], 2);
-                        } 
-                        elseif ($col === 'beginning_inventory') {
-                            echo "<span style='color: #4a90e2; font-weight: 500;'>" . htmlspecialchars($row[$col] ?? '0') . "</span>";
-                        } 
-                        elseif ($col === 'received_qty') {
-                            echo "<span style='color: #27ae60;'>+" . htmlspecialchars($row[$col] ?? '0') . "</span>";
-                        } 
-                        elseif ($col === 'quantity') {
-                            echo "<strong style='" . ($isCritical ? "color: #e74c3c;" : "") . "'>" . htmlspecialchars($row[$col] ?? '0') . "</strong>";
-                        }
-                        else {
-                            echo htmlspecialchars($row[$col] ?? '');
-                        }
-                    ?>
-                </td>
-            <?php endforeach; ?>
-            <td class="total-val" style="font-weight: bold; background-color: #fcfcfc;">
-                ₱<?= number_format($rowTotal, 2) ?>
-            </td>
-        </tr>
-    <?php endwhile; ?>
-</tbody>
+            <tbody>
+                <?php 
+                $result->data_seek(0); 
+                while($row = $result->fetch_assoc()): 
+                    $qty = (int)($row['quantity'] ?? 0);
+                    $minQty = (int)($row['min_quantity'] ?? 0);
+                    $isAck = (int)($row['is_acknowledged'] ?? 0);
+                    $rowTotal = (float)$qty * (float)$row['price'];
+                    $isCritical = ($qty <= $minQty);
+                ?>
+                    <tr data-id="<?= $row['id'] ?>" class="<?= ($qty <= $minQty && $qty > 0) ? 'critical-row' : ($qty <= 0 ? 'out-of-stock-row' : '') ?>">
+                        <?php foreach($cols as $col): ?>
+                            <td><?php include "inventoryCells.php"; ?></td>
+                        <?php endforeach; ?>
+                        <td class="total-val">₱<?= number_format($rowTotal, 2) ?></td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
         </table>
     </div>
 
@@ -88,35 +71,19 @@
         <h3>No records found for <?= date("F", mktime(0, 0, 0, $selectedMonth, 1)) ?> <?= $selectedYear ?></h3>
         
         <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center; align-items: center;">
-            
             <button id="openBtnEmpty" class="opnbtn" style="margin: 0; display: flex; align-items: center; justify-content: center; height: 40px; padding: 0 20px;">
-
                 Add First Item
             </button>
 
             <form method="POST" style="display: inline; margin: 0;">
                 <input type="hidden" name="month" value="<?= $selectedMonth ?>">
                 <input type="hidden" name="year" value="<?= $selectedYear ?>">
-                <button type="submit" name="carryOverAction" style="background-color: #f39c12; color: white; border: none; border-radius: 4px; cursor: pointer; height: 40px; padding: 0 20px; display: flex; align-items: center; justify-content: center; font-family: inherit; font-size: 14px; font-weight: 500;">
+                <button type="submit" name="carryOverAction" class="carry-over-btn">
                     Carry Over from Last Month
                 </button>
             </form>
-            
         </div>
     </div>
 <?php endif; ?>
 
-<?php include "../../component/inventoryModal/inventoryModal.php"; ?>
-
-<script>
-    if (document.getElementById('openBtn')) {
-        document.getElementById('openBtn').addEventListener('click', () => {
-            document.getElementById('modal').classList.add('show');
-        });
-    }
-    if (document.getElementById('openBtnEmpty')) {
-        document.getElementById('openBtnEmpty').addEventListener('click', () => {
-            document.getElementById('modal').classList.add('show');
-        });
-    }
-</script>
+<?php include "../../component/inventoryModal/inventoryModal.php"; ?>   

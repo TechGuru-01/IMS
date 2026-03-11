@@ -1,6 +1,6 @@
 .inventory-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: collapse; /* Dati mong setup, walang bago dito */
   border-radius: 10px;
   overflow: hidden;
 }
@@ -10,6 +10,16 @@
 }
 
 .inventory-table th {
+  /* Sticky Logic */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  /* Smoothness Fix: Para hindi "sumisilip" yung borders ng TD sa likod ng TH */
+  background-color: var(--primary-color) !important;
+  background-clip: padding-box;
+
+  /* Original Styles Mo */
   color: white !important;
   padding: 15px 10px;
   font-size: 12px;
@@ -17,6 +27,16 @@
   font-weight: 700;
   text-align: center;
   border: none;
+}
+
+/* Optional Fix: Kung may nakikita kang gap sa ilalim ng header habang nag-scroll */
+.inventory-table thead th::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  border-bottom: 1px solid var(--primary-color);
 }
 
 .th-content {
@@ -70,18 +90,63 @@
   box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
 }
 
-#openBtnEmpty:active {
-  transform: translateY(0);
-}
-
 .critical-row {
-  background-color: #fff1f0 !important;
+  background-color: #ffebee !important;
+  color: #c62828 !important;
 }
 
 .critical-row td {
-  color: #c0392b;
+  color: #c62828;
+  border-bottom: 1px solid #ef9a9a !important;
 }
 
-.critical-row:hover {
-  background-color: #ffe4e1 !important;
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.status-badge.acknowledged {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+.status-badge.pending {
+  background-color: #fff3e0;
+  color: #ef6c00;
+  border: 1px solid #ffe0b2;
+}
+.status-badge.healthy {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  border: 1px solid #bbdefb;
+}
+.status-badge.out-of-stock {
+  background-color: #212121;
+  color: #ffffff;
+  margin-left: 5px;
+}
+
+.out-of-stock-row {
+  background-color: #fce4ec !important;
+  border-left: 5px solid #880e4f;
+}
+
+.carry-over-btn {
+  background-color: #f39c12;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  height: 40px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
 }

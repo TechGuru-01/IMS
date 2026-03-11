@@ -22,11 +22,13 @@
 }
 .box-3 {
   grid-area: bottom;
+  overflow: hidden;
+  max-height: 520px;
 }
 
 .box-4 {
   grid-area: right;
-  max-height: 85vh; 
+  max-height: 85vh;
   overflow-y: auto;
 }
 

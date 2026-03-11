@@ -1,17 +1,30 @@
-function filterTable() {
-    const input = document.getElementById("inventorySearch");
-    const filter = input.value.toLowerCase();
-    const table = document.getElementById("inventoryTable");
-    const tr = table.getElementsByTagName("tr");
+window.filterTable = function (type) {
+  let inputId, tableId;
+  if (type === "modal") {
+    inputId = "modalSearch";
+    tableId = "editorTable";
+  } else {
+    inputId = "inventorySearch";
+    tableId = "inventoryTable"; 
+  }
 
-    for (let i = 1; i < tr.length; i++) {
-        const row = tr[i];
-        const rowText = row.textContent || row.innerText;
+  const input = document.getElementById(inputId);
+  const table = document.getElementById(tableId);
 
-        if (rowText.toLowerCase().indexOf(filter) > -1) {
-            row.style.display = "";
-        } else {
-            row.style.display = "none";
-        }
+  if (!input || !table) return;
+
+  const filter = input.value.toLowerCase();
+  const tr = table.getElementsByTagName("tr");
+
+  // Loop sa rows (skip header index 0)
+  for (let i = 1; i < tr.length; i++) {
+    const row = tr[i];
+    const text = row.textContent || row.innerText;
+
+    if (text.toLowerCase().indexOf(filter) > -1) {
+      row.style.display = "";
+    } else {
+      row.style.display = "none";
     }
-}
+  }
+};

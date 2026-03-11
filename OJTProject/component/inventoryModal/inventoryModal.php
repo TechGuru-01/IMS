@@ -18,21 +18,31 @@
         </form>
 
         <hr style="margin: 20px 0;">
+        <div class="modal-func">
+        <div class="search-box">
+            <span class="material-symbols-outlined">search</span>
+            <input type="text" id="modalSearch" placeholder="Search in modal..." onkeyup="filterTable('modal')">
+        </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 10px;">
             <a href="../../component/qrGen/qr_gen.php" style="text-decoration: none;">
-                <button class="qr-btn-container" style="background: #333; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 5px; height:40px;">
+                <button type="button" class="qr-btn-container" style="background: #333; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 5px; height:40px;">
                     <span class="material-symbols-outlined">qr_code_2</span>
                     <span>Generate QR</span>
                 </button>
             </a>
+            
             <button type="submit" form="bulkDeleteForm" name="bulkDelete" onclick="return confirm('Delete selected?')" style="background:#ed0505; color:white; height:40px; border:none; padding:8px 15px; cursor:pointer; border-radius:5px; font-weight:bold;">Delete</button>
+            
             <div id="modal-actions"></div>
         </div>
-        
+        </div>
         <form id="bulkDeleteForm" method="POST">
             <input type="hidden" name="selected_month" value="<?= $selectedMonth ?>">
             <div id="modal-table-container"></div>
         </form>
+        
     </div>
+
+    
 </div>

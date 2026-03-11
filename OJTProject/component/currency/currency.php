@@ -9,7 +9,9 @@ $d_rate = 0;
 $y_rate = 0;
 $peso = 0;
 
-$selectedMonth = isset($_SESSION['selected_month']) ? (int)$_SESSION['selected_month'] : null;
+// --- FIXED LOGIC: Default to Current Month if Session is not set ---
+// Ito ay para mag-match sa inventory_logic.php mo
+$selectedMonth = isset($_SESSION['selected_month']) ? (int)$_SESSION['selected_month'] : (int)date('n');
 $selectedYear = isset($_SESSION['selected_year']) ? (int)$_SESSION['selected_year'] : (int)date('Y');
 
 // Handle Rate Updates (POST)
@@ -19,13 +21,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt = $conn->prepare("UPDATE settings SET setting_value = ? WHERE setting_key = 'dollar_rate'");
         $stmt->bind_param("d", $new_rate);
         $stmt->execute();
+        $stmt->close();
     }
     if (isset($_POST['update_yen'])) {
         $new_rate = (float)$_POST['new_yen_rate'];
         $stmt = $conn->prepare("UPDATE settings SET setting_value = ? WHERE setting_key = 'yen_rate'");
         $stmt->bind_param("d", $new_rate);
         $stmt->execute();
+        $stmt->close();
     }
+    // Refresh page para makita agad ang bagong rate
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
 }
 
 // Fetch rates STRICTLY from Database
@@ -37,9 +44,9 @@ if ($settingsResult && $settingsResult->num_rows > 0) {
     }
 }
 
-// Run Inventory Query only if month is selected
-if ($selectedMonth !== null) {
-    $totalQuery = $conn->query("SELECT SUM(quantity * price) AS grand_total FROM inventory WHERE MONTH(date_created) = $selectedMonth AND YEAR(date_created) = $selectedYear");
+// Run Inventory Query - Ngayon laging may value ito (Current Month default)
+$totalQuery = $conn->query("SELECT SUM(quantity * price) AS grand_total FROM inventory WHERE MONTH(date_created) = $selectedMonth AND YEAR(date_created) = $selectedYear");
+if ($totalQuery) {
     $invRow = $totalQuery->fetch_assoc();
     $peso = (float)($invRow['grand_total'] ?? 0);
 }
@@ -58,6 +65,7 @@ $yenTotal    = ($y_rate > 0) ? ($peso / $y_rate) : 0;
             </form> 
         </div>
         <h1>$<?= number_format($dollarTotal, 2) ?></h1>
+
     </div>
 </div>
 
@@ -71,5 +79,6 @@ $yenTotal    = ($y_rate > 0) ? ($peso / $y_rate) : 0;
             </form> 
         </div>
         <h1>¥<?= number_format($yenTotal, 2) ?></h1>
+
     </div>
 </div>

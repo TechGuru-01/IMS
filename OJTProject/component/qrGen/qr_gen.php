@@ -1,117 +1,94 @@
 <?php
-// qr_generator.php
 include "../../include/config.php"; 
 
-// SQL Query: Sinigurado nating 'item' at 'description' ang kinukuha
-$sql = "SELECT id, item, description FROM inventory ORDER BY id DESC";
-$result = $conn->query($sql);
-
+$ids_param = isset($_GET['ids']) ? $_GET['ids'] : '';
 $inventory_data = [];
+
+if (!empty($ids_param)) {
+    // Siguraduhing kasama ang 'item_uuid' sa SELECT query
+    $clean_ids = implode(',', array_map('intval', explode(',', $ids_param)));
+    $sql = "SELECT id, item, description, item_uuid FROM inventory WHERE id IN ($clean_ids) ORDER BY id DESC";
+} else {
+    $sql = "SELECT id, item, description, item_uuid FROM inventory ORDER BY id DESC";
+}
+
+$result = $conn->query($sql);
 if ($result) {
     while($row = $result->fetch_assoc()) {
+        // I-save ang UUID sa array para makuha ng JavaScript
         $inventory_data[] = [
-            'id' => $row['id'],
-            'item' => $row['item'], // Key is 'item'
-            'desc' => $row['description']
+            'id' => $row['id'], 
+            'item' => $row['item'], 
+            'desc' => $row['description'],
+            'uuid' => $row['item_uuid'] // Eto ang kailangan natin
         ];
     }
 }
 $conn->close();
-
-$json_data = json_encode($inventory_data);
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
-    <title>HEPC JIG IMS | Inventory QR Generator</title>
+    <title>QR Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-   <style>
-    body { font-family: sans-serif; text-align: center; background: #f9f9f9; }
-    
-    .grid { 
-        display: flex; 
-        flex-wrap: wrap; 
-        justify-content: center; 
-        gap: 10px; /* Para malinis ang pagitan */
-    }
-
-    .qr-card {
-        background: #fff;
-        border: 2px solid #333;
-        padding: 20px; /* Dinagdagan ko ng konti para hindi dikit sa border */
-        margin: 10px;
-        border-radius: 10px;
-        width: 200px; 
-        
-        /* ETO YUNG FIX: Flexbox para sa alignment */
-        display: flex;
-        flex-direction: column; /* Para pababa ang ayos */
-        align-items: center;    /* Gitna horizontal */
-        justify-content: center; /* Gitna vertical */
-    }
-
-    /* Siguraduhin na ang loob ng QR div ay laging nasa gitna */
-    .qr-card div canvas, .qr-card div img {
-        margin: 0 auto;
-        display: block;
-    }
-
-    .name-label { 
-        margin-top: 15px; 
-        font-weight: bold; 
-        font-size: 1.1em; 
-        text-transform: uppercase;
-        width: 100%; /* Para hindi mag-shrink */
-        text-align: center;
-    }
-
-    .desc-label { 
-        font-size: 0.9em; 
-        color: #666; 
-        width: 100%;
-        text-align: center;
-        margin-top: 5px;
-    }
-</style>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #f4f4f4; padding: 20px; }
+        .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+        .qr-card { 
+            background: #fff; border: 1px solid #ddd; padding: 15px; 
+            border-radius: 8px; width: 180px; display: flex; 
+            flex-direction: column; align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            page-break-inside: avoid; /* Para hindi maputol pag pini-print */
+        }
+        .name-label { margin-top: 10px; font-weight: bold; font-size: 14px; text-transform: uppercase; }
+        .desc-label { font-size: 11px; color: #777; margin-top: 2px; }
+        .uuid-label { font-size: 9px; color: #ccc; margin-top: 5px; } /* Optional: Para sa debugging */
+        @media print { .no-print { display: none; } body { background: #fff; padding: 0; } }
+    </style>
 </head>
 <body>
-
-    <h1>Inventory QR Codes</h1>
-    <button onclick="window.print()" style="padding: 10px 20px; cursor:pointer;">Print All QR Codes</button>
+    <div class="no-print">
+        <h1>Inventory QR Codes</h1>
+        <p>This QR uses <strong>UUID</strong> for monthly persistence.</p>
+        <button onclick="window.print()" style="padding: 10px 20px; margin-bottom: 20px; cursor:pointer; background: #28a745; color: white; border: none; border-radius: 5px;">Print Selected</button>
+        <button onclick="window.history.back()" style="padding: 10px 20px; cursor:pointer;">Back to Inventory</button>
+    </div>
     
     <div id="qr-container" class="grid"></div>
 
     <script>
-        const data = <?php echo $json_data; ?>;
-        const container = document.getElementById('qr-container');
+        const data = <?= json_encode($inventory_data) ?>;
+        
+        data.forEach(item => {
+            // Validation: Kung walang UUID, magpakita ng error sa card
+            if (!item.uuid) {
+                console.error("Missing UUID for item: " + item.item);
+                return;
+            }
 
-        data.forEach(itemRecord => {
-            let card = document.createElement('div');
+            const card = document.createElement('div');
             card.className = 'qr-card';
             
-            let qrDiv = document.createElement('div');
+            const qrDiv = document.createElement('div');
+            qrDiv.id = "qr-" + item.id;
+
+            card.innerHTML = `
+                <div class="name-label">${item.item}</div>
+                <div class="desc-label">${item.desc}</div>
+                <div class="uuid-label">${item.uuid}</div>
+            `;
             
-            // FIX: Changed item.name to itemRecord.item to match the PHP array key
-            let nameLabel = document.createElement('div');
-            nameLabel.className = 'name-label';
-            nameLabel.innerText = itemRecord.item; 
+            card.prepend(qrDiv);
+            document.getElementById('qr-container').appendChild(card);
 
-            let descLabel = document.createElement('div');
-            descLabel.className = 'desc-label';
-            descLabel.innerText = itemRecord.desc;
-
-            card.appendChild(qrDiv);
-            card.appendChild(nameLabel);
-            card.appendChild(descLabel);
-            container.appendChild(card);
-
-            let finalLink = "http://192.168.10.178/user_ims/index.php?id=" + itemRecord.id;
-
+            // PALITAN ANG LINK: Gagamit na tayo ng uuid= sa halip na id=
             new QRCode(qrDiv, {
-                text: finalLink,
-                width: 160,
-                height: 160,
+                text: "http://192.168.10.178/user_ims/index.php?uuid=" + item.uuid,
+                width: 150, 
+                height: 150,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
                 correctLevel : QRCode.CorrectLevel.H
             });
         });
