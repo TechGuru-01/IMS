@@ -1,0 +1,98 @@
+.inventory-container {
+  margin: 30px auto;
+  width: 95%;
+  max-width: 1800px;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+}
+
+.inv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 25px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #f1f5f9;
+  padding: 0 15px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  width: 250px;
+  height: 38px;
+  margin-bottom: 10px;
+}
+
+.search-box input {
+  border: none;
+  background: transparent;
+  outline: none;
+  padding: 5px 10px;
+  width: 100%;
+  font-size: 14px;
+}
+
+.grand-total-card {
+  background: #f8fafc;
+  border-left: 4px solid #2563eb;
+  padding: 15px 20px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.grand-total-card .label {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.grand-total-card .amount {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.btn-container {
+  display: flex;
+  gap: 10px;
+}
+
+.excel-btn,
+.opnbtn {
+  height: 40px;
+  padding: 0 15px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  color: white;
+  font-size: 13px;
+}
+
+.excel-btn {
+  background: #185c37;
+}
+.opnbtn {
+  background: #0f172a;
+}
+
+#closeBtn,
+button[name="bulkDelete"] {
+  background: #ed0505;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
