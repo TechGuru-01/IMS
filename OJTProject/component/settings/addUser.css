@@ -1,0 +1,170 @@
+:root {
+    --navy: #0a192f;
+    --border-color: #e0e0e0;
+    --white: #ffffff;
+    --danger: #ed0505;
+}
+
+body {
+    background-color: var(--white);
+    color: var(--navy);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.app-header h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+     margin-top: 70px;
+    padding: 15px;
+    border-radius: 16px;
+    border:1px solid black;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    border-bottom: 2px solid var(--navy);
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+}
+
+/* Form Styling */
+.form-section {
+    margin-bottom: 40px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--navy);
+}
+
+/* Outline Buttons */
+.submit-btn-outline {
+    width: 100%;
+    background: var(--navy);
+    color: var(--white);
+    border: 2px solid var(--navy);
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+
+/* Table Design */
+.table-responsive {
+    overflow-x: auto;
+    margin-top: -30px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 2px solid var(--navy);
+    font-size: 0.9rem;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.95rem;
+}
+
+.delete-btn-outline {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    padding: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.delete-btn-outline:hover {
+    background: var(--danger);
+    color: white;
+}
+
+/* Footer Box with Border */
+
+/* Modal Styling (Base sa IMS) */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-box {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    width: 85%;
+    max-width: 320px;
+}
+
+.modal-btns {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-btns button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-cancel { background: #eee; color: #333; }
+.btn-confirm { background: var(--navy); color: white; }

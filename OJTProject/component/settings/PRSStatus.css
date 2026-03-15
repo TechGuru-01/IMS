@@ -1,0 +1,279 @@
+/* =========================================
+   PRS STATUS MAIN STYLES (DARKER VERSION)
+   ========================================= */
+
+/* --- View Toggle Switch --- */
+.view-toggle {
+  display: flex;
+  background: #eeeeee;
+  padding: 4px;
+  border-radius: 25px;
+  width: fit-content;
+  gap: 4px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.view-toggle a {
+  text-decoration: none;
+  font-size: 13px;
+  padding: 8px 20px;
+  border-radius: 25px;
+  color: #666;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.view-toggle a.active {
+  background: #072d7a;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Layout Containers --- */
+hr {
+  border: 0;
+  height: 1px;
+  background: #e2e8f0;
+  margin: 25px 0;
+}
+
+.status-content {
+  margin-top: 20px;
+  background: white;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+/* =========================================
+   LIST MODE STYLING
+   ========================================= */
+#inventoryTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.list-mode #inventoryTable {
+  display: table;
+}
+
+.list-mode #inventoryTable th {
+  background: #f1f5f9;
+  color: #334155;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  padding: 14px 12px;
+  border-bottom: 3px solid #cbd5e1;
+  text-align: left;
+}
+
+.list-mode #inventoryTable td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+/* =========================================
+   GRID MODE STYLING
+   ========================================= */
+.grid-mode #inventoryTable {
+  display: block;
+  width: 100%;
+}
+
+.grid-mode #inventoryTable thead {
+  display: none;
+}
+
+.grid-mode #inventoryTable tbody {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+  padding: 15px 0;
+}
+
+.grid-mode #inventoryTable tr {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  height: fit-content;
+}
+
+.grid-mode #inventoryTable td {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.grid-mode #inventoryTable td::before {
+  content: attr(data-field);
+  font-weight: 800;
+  color: #475569;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+}
+
+/* =========================================
+   DARKER STATUS COLORS (Rows & Cards)
+   ========================================= */
+
+/* Follow Up - Orange/Gold */
+#inventoryTable tr.status-follow-up {
+  background-color: #ffedd5 !important; /* Matingkad na Peach */
+}
+.grid-mode #inventoryTable tr.status-follow-up {
+  border-left: 8px solid #f97316;
+}
+
+/* Hold - Red */
+#inventoryTable tr.status-hold {
+  background-color: #fee2e2 !important; /* Matingkad na Pinkish-Red */
+}
+.grid-mode #inventoryTable tr.status-hold {
+  border-left: 8px solid #ef4444;
+}
+
+/* On Process - Blue */
+#inventoryTable tr.status-on-process {
+  background-color: #dbeafe !important; /* Matingkad na Sky Blue */
+}
+.grid-mode #inventoryTable tr.status-on-process {
+  border-left: 8px solid #3b82f6;
+}
+
+#inventoryTable tr.status-done {
+  background-color: #ccfbf1 !important; /* Light Teal background */
+}
+.grid-mode #inventoryTable tr.status-done {
+  border-left: 8px solid #0d9488;
+}
+.manual-status-select.status-done {
+  background: #0d9488;
+  color: white;
+  border-color: #0f766e;
+}
+.grid-mode #inventoryTable tr.status-production {
+  border-left: 8px solid #a855f7;
+}
+
+#inventoryTable tr.status-follow-up {
+  background-color: #ffedd5 !important;
+}
+.grid-mode #inventoryTable tr.status-follow-up {
+  border-left: 8px solid #f97316;
+}
+.manual-status-select.status-follow-up {
+  background: #f97316;
+  color: white;
+  border-color: #ea580c;
+}
+
+#inventoryTable tr.status-hold {
+  background-color: #fee2e2 !important;
+}
+.grid-mode #inventoryTable tr.status-hold {
+  border-left: 8px solid #ef4444;
+}
+.manual-status-select.status-hold {
+  background: #ef4444;
+  color: white;
+  border-color: #dc2626;
+}
+
+
+#inventoryTable tr.status-on-process {
+  background-color: #dbeafe !important;
+}
+.grid-mode #inventoryTable tr.status-on-process {
+  border-left: 8px solid #3b82f6;
+}
+.manual-status-select.status-on-process {
+  background: #3b82f6;
+  color: white;
+  border-color: #2563eb;
+}
+
+
+#inventoryTable tr.status-production {
+  background-color: #f3e8ff !important;
+}
+.grid-mode #inventoryTable tr.status-production {
+  border-left: 8px solid #a855f7;
+}
+.manual-status-select.status-production {
+  background: #a855f7;
+  color: white;
+  border-color: #9333ea;
+}
+
+
+#inventoryTable tr.status-received {
+  background-color: #dcfce7 !important;
+}
+.grid-mode #inventoryTable tr.status-received {
+  border-left: 8px solid #22c55e;
+}
+.manual-status-select.status-received {
+  background: #22c55e;
+  color: white;
+  border-color: #16a34a;
+}
+
+
+#inventoryTable tr.status-cancelled {
+  background-color: #f1f5f9 !important; 
+}
+#inventoryTable tr.status-cancelled td {
+  color: #94a3b8; 
+}
+.grid-mode #inventoryTable tr.status-cancelled {
+  border-left: 8px solid #94a3b8;
+  opacity: 0.75; 
+}
+.manual-status-select.status-cancelled {
+  background: #64748b;
+  color: #f8fafc;
+  border-color: #475569;
+}
+/* Optional: Strike-through sa Reference No. pag Cancelled */
+tr.status-cancelled td[data-field="ref_number"] {
+  text-decoration: line-through;
+  font-style: italic;
+}
+
+#inventoryTable tr.status-done {
+  background-color: #ccfbf1 !important; /* Light Teal background */
+}
+
+/* =========================================
+   BASE COMPONENTS (Dropdown & Hover)
+   ========================================= */
+.manual-status-select {
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  padding: 5px 15px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  text-align: center;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+#inventoryTable tr:hover {
+  filter: brightness(0.95);
+  transition: 0.2s;
+}
