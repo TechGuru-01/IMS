@@ -9,13 +9,10 @@ $view = $_GET['view'] ?? 'weekly';
 
 
 if ($view === 'weekly') {
-  
     $whereClause = "WHERE YEARWEEK(date, 1) = YEARWEEK(CURDATE(), 1)";
 } else {
-   
     $whereClause = "WHERE MONTH(date) = $m AND YEAR(date) = $y";
-}
-$whereClause = "WHERE MONTH(date) = $m AND YEAR(date) = $y";
+};
 
 $chartSql = "SELECT 
                 item, 

@@ -1,32 +1,3 @@
-let isReuseMode = false;
-function toggleReuseMode() {
-    isReuseMode = !isReuseMode;
-    const btn = document.getElementById("reuseBtn");
-    const text = document.getElementById("reuseText");
-    const rows = document.querySelectorAll("tr[data-ref]");
-
-    if (isReuseMode) {
-        if (btn) btn.style.background = "#dc3545";
-        if (text) text.innerText = "Cancel Reuse";
-        rows.forEach((row) => {
-            row.style.cursor = "pointer";
-            row.style.outline = "2px dashed #dc3545";
-            row.onclick = function () {
-                const refToCopy = this.getAttribute("data-ref");
-                if (refToCopy) fetchAndPopulateModal(refToCopy);
-            };
-        });
-    } else {
-        if (btn) btn.style.background = "#28a745";
-        if (text) text.innerText = "Reuse";
-        rows.forEach((row) => {
-            row.style.cursor = "default";
-            row.style.outline = "none";
-            row.onclick = null;
-        });
-    }
-}
-
 function createItemRow(index, name = "", desc = "", maker = "", uom = "", qty = "", price = "") {
     const currencySelect = document.getElementById("currency_type");
     const currencySign = currencySelect ? currencySelect.value : "PHP";
@@ -54,16 +25,14 @@ function createItemRow(index, name = "", desc = "", maker = "", uom = "", qty = 
         </div>
     `;
 }
+
 function addNewRow() {
     const listBody = document.getElementById("items_list_body");
     if (!listBody) return;
 
-    if (listBody.innerHTML.includes("No items found")) {
-        listBody.innerHTML = "";
-    }
-
     const currentIndex = listBody.querySelectorAll(".item-row").length;
-    const newRowHTML = createItemRow(currentIndex, "", "", "", 1, 0.00);
+    const newRowHTML = createItemRow(currentIndex, "", "", "","");
+    
     listBody.insertAdjacentHTML("beforeend", newRowHTML);
 
     const lastRow = listBody.lastElementChild;
@@ -72,6 +41,7 @@ function addNewRow() {
 
     calculateGrandTotal();
 }
+
 
 function removePRItem(btn) {
     const row = btn.closest(".item-row");
@@ -88,51 +58,19 @@ function removePRItem(btn) {
     }
 }
 
-async function fetchAndPopulateModal(refToCopy) {
-    try {
-        const response = await fetch(`./getPRSDetail.php?ref=${encodeURIComponent(refToCopy)}`);
-        const data = await response.json();
-
-        if (data.success) {
-            const header = data.header;
-            
-            document.getElementById("modal_company").value = header.company || "";
-            document.getElementById("modal_remarks").value = header.remarks || "";
-            document.getElementById("currency_type").value = header.currency || "PHP";
-            document.getElementById("modal_pr_date").value = new Date().toISOString().split("T")[0];
-
-            const listBody = document.getElementById("items_list_body");
-            listBody.innerHTML = "";
-
-            if (data.items && data.items.length > 0) {
-                data.items.forEach((item, index) => {
-                    listBody.insertAdjacentHTML("beforeend", 
-                        createItemRow(index, item.material_name, item.description, item.maker, item.quantity, item.unit_price)
-                    );
-                });
-            } else {
-                listBody.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:10px;">No items found.</p>';
-            }
-
-            document.getElementById("modal_title").innerText = "♻️ Reuse PR: " + refToCopy;
-            document.getElementById("prModal").style.display = "flex";
-
-            calculateGrandTotal();
-            if (isReuseMode) toggleReuseMode();
-        } else {
-            alert("Error: " + data.message);
-        }
-    } catch (err) {
-        console.error("Critical Error:", err);
-    }
-}
 
 function calculateGrandTotal() {
     let grandTotal = 0;
     const currencySelect = document.getElementById("currency_type");
+    if (!currencySelect) return;
+
     const selectedOption = currencySelect.options[currencySelect.selectedIndex];
     const rate = parseFloat(selectedOption.getAttribute("data-rate")) || 1;
     const currencySign = currencySelect.value;
+
+
+    const currencyLabel = document.getElementById("currency_label");
+    if (currencyLabel) currencyLabel.innerText = currencySign;
 
     const rows = document.querySelectorAll(".item-row");
     rows.forEach((row) => {
@@ -151,6 +89,30 @@ function calculateGrandTotal() {
     if (totalInput) totalInput.value = grandTotal.toFixed(2);
 }
 
+
+function prepareSubmission() {
+    const rows = document.querySelectorAll(".item-row");
+    if (rows.length === 0) {
+        alert("Please add at least one item.");
+        return false;
+    }
+
+
+    const genRef = document.getElementById("gen_ref").value;
+    const suffix = document.getElementById("admin_suffix").value.trim();
+    document.getElementById("final_ref").value = suffix ? `${genRef}-${suffix}` : genRef;
+
+    return true;
+}
+
 function closePRModal() {
     document.getElementById("prModal").style.display = "none";
+}
+
+function openNewPRModal() {
+    document.getElementById("exportForm").reset();
+    document.getElementById("items_list_body").innerHTML = "";
+    addNewRow();
+    
+    document.getElementById("prModal").style.display = "flex";
 }

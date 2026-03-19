@@ -129,7 +129,7 @@ $result = $conn->query("SELECT * FROM $target_table ORDER BY name ASC");
         </div>
     </div>
 </div>
-<script src="../../component/search.js.js"></script>
+<script src="../search.js"></script>
 <script src="addUser.js"></script>
 </body>
 </html>

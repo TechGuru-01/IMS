@@ -8,23 +8,21 @@ while($row = $res_settings->fetch_assoc()) {
     if ($row['setting_key'] == 'yen_rate') $jpy_rate = $row['setting_value'];
 }
 
+
 date_default_timezone_set('Asia/Manila'); 
 
 $res_max = $conn->query("SELECT MAX(pr_id) as last_id FROM pr_reports");
 $row_max = $res_max->fetch_assoc();
 $next_num = ($row_max['last_id'] ?? 0) + 1;
-
 $report_num = str_pad($next_num, 4, '0', STR_PAD_LEFT);
-
 $generated_ref = "JIG-" . date('Ymd') . "-" . $report_num;
 ?>
 
 <style>
     .pr-items-grid {
         display: grid;
-        /* Balanced grid columns to match row inputs */
-        grid-template-columns: 30px 1.5fr 1.8fr 1fr 1fr 70px 90px 120px 40px;
-        gap: 10px;
+        grid-template-columns: 40px 1.5fr 1.8fr 1.2fr 70px 100px 120px 45px;
+        gap: 12px;
         align-items: center;
     }
 
@@ -38,14 +36,12 @@ $generated_ref = "JIG-" . date('Ymd') . "-" . $report_num;
     }
 
     .pr-header-labels {
-        padding: 10px;
-        background: #f8fafc;
-        border-bottom: 2px solid #cbd5e1;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e2e8f0;
         font-weight: bold;
         font-size: 11px;
         color: #475569;
-        margin-bottom: 0;
-        border-radius: 8px 8px 0 0;
+        margin-bottom: 10px;
     }
 
     .modal-overlay {
@@ -69,7 +65,7 @@ $generated_ref = "JIG-" . date('Ymd') . "-" . $report_num;
             📝 Prepare Purchase Request
         </h3>
 
-        <form id="exportForm" method="POST" action="../../prs_gen.php" target="_blank" onsubmit="return prepareSubmission();">
+        <form id="exportForm" method="POST" action="../../prs_gen.php" target="_blank">
             <input type="hidden" name="form_mode" id="form_mode" value="create">
             <input type="hidden" name="ref_number" id="final_ref">
 
@@ -82,8 +78,7 @@ $generated_ref = "JIG-" . date('Ymd') . "-" . $report_num;
                         <input type="text" id="admin_suffix" name="admin_suffix" class="pr-input-style" placeholder="Suffix (e.g. URGENT)" style="flex:1;">
                     </div>
                 </div>
-
-                <div>
+                 <div>
                     <label style="font-weight:600; font-size:13px;">PR Date</label>
                     <input type="date" name="pr_date" id="modal_pr_date" class="pr-input-style" value="<?= date('Y-m-d') ?>" required>
                 </div>
@@ -92,28 +87,25 @@ $generated_ref = "JIG-" . date('Ymd') . "-" . $report_num;
                     <label style="font-weight:600; font-size:13px;">Attention to</label>
                     <input list="company_options" name="company" id="modal_company" class="pr-input-style" required>
                 </div>
-
                 <div style="grid-column: span 2; display: flex; justify-content: space-between; align-items: flex-end; margin-top: 15px;">
-                    <label style="font-weight:600; font-size:14px; color:#072d7a;">📦 Item Details</label>
+                        <label style="font-weight:600; font-size:14px; color:#072d7a;">📦 Item Details</label>
                 </div>
-
-                <div style="grid-column: span 2; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff;">
-                    <div class="pr-items-grid pr-header-labels">
-                        <div class="text-center">No.</div>
-                        <div>Item Name</div>
-                        <div>Description/Specs</div>
-                        <div>Maker</div>
-                        <div>UOM</div>
-                        <div class="text-center">Qty</div>
-                        <div>Unit Price</div>
-                        <div class="text-right" style="padding-right:10px;">Subtotal</div>
-                        <div></div>
-                    </div>
+                <div style="grid-column: span 2;">
+                     <div class="text-center">#</div>
+                            <div>Item Name</div>
+                            <div>Description/Specs</div>
+                            <div>Maker</div>
+                            <div>UOM</div>
+                            <div class="text-center">Qty</div>
+                            <div>Unit Price</div>
+                            <div class="text-right">Subtotal</div>
+                            <div></div> </div>
                     
-                    <div id="items_list_body" style="max-height:350px; overflow-y:auto; padding: 10px;">
+                    <div id="items_list_body" style="max-height:350px; overflow-y:auto; padding-right:5px;">
                         </div>
                 </div>
 
+               
                 <div>
                     <label style="font-weight:600; font-size:13px;">Currency</label>
                     <select name="currency" id="currency_type" class="pr-input-style" onchange="calculateGrandTotal()">
@@ -123,6 +115,7 @@ $generated_ref = "JIG-" . date('Ymd') . "-" . $report_num;
                     </select>
                 </div>
 
+                <div><label style="font-weight:600; font-size:13px;">UOM</label><input list="uom_options" name="uom" id="modal_uom" class="pr-input-style" required></div>
                 <div><label style="font-weight:600; font-size:13px;">RM / FG</label><input list="RMFG_options" name="rm_fg" id="modal_rmfg" class="pr-input-style" required></div>
                 <div><label style="font-weight:600; font-size:13px;">Type</label><input list="ToR_options" name="ToR" id="modal_tor" class="pr-input-style" required></div>
 
@@ -138,7 +131,7 @@ $generated_ref = "JIG-" . date('Ymd') . "-" . $report_num;
                 
                 <div style="grid-column: span 2; display:flex; justify-content:flex-end; gap:12px; margin-top:10px; border-top:1px solid #edf2f7; padding-top:15px;">
                     <button type="button" onclick="closePRModal()" style="background:#fff; border:1px solid #e2e8f0; padding:10px 20px; border-radius:8px; cursor:pointer;">Cancel</button>
-                    <button type="submit" name="bulk_resolve" style="background:#072d7a; color:white; border:none; padding:10px 25px; border-radius:8px; cursor:pointer; font-weight:600;">
+                    <button type="submit" name="bulk_resolve" onclick="return prepareSubmission();" style="background:#072d7a; color:white; border:none; padding:10px 25px; border-radius:8px; cursor:pointer; font-weight:600;">
                         Save & Download
                     </button>
                 </div>

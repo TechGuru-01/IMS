@@ -55,8 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <div class = "login-container"> 
     <div class="login-wrapper">
         <div class="brand-side">
-            <span class="material-symbols-outlined ninja-icon">settings_suggest</span>
-            <h1>HEPC</h1>
+            <img src="./src/hepc.jpg" alt="www" style="width: 70px; height: auto;">
             <p>Inventory Management System</p>
         </div>
 

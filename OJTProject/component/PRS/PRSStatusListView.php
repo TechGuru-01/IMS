@@ -1,5 +1,5 @@
 <?php
-$cols = ['pr_id', 'ref_number', 'pr_date', 'status', 'company', 'all_materials', 'total_amount', 'remarks'];
+$cols = ['pr_id', 'ref_number', 'pr_date', 'status','all_materials', 'all_descriptions', 'company',  'total_amount', 'remarks'];
 ?>
 
 <table class="inventory-table" id="inventoryTable">
@@ -82,8 +82,26 @@ $cols = ['pr_id', 'ref_number', 'pr_date', 'status', 'company', 'all_materials',
                                         echo '<span style="color:gray; font-style: italic;">None</span>';
                                     }
                                 } 
+                                // --- DESCRIPTION LIST DROPDOWN ---
+                                    elseif ($col == 'all_descriptions') {
+                                        if (!empty($row[$col])) {
+                                            $desc_list = explode(', ', $row[$col]);
+                                            echo '<details style="cursor: pointer; outline: none;">';
+                                            echo '<summary style="color: #072d7a; font-weight: bold; list-style: none; font-size: 0.85rem;">';
+                                            echo '▼ View ' . $count . ' description';
+                                            echo '</summary>';
+                                           echo '<div style="margin-top: 5px; padding: 8px; background: #f8fafc; border-radius: 4px; max-height: 120px; overflow-y: auto; font-size: 0.8rem; border-left: 3px solid #072d7a; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">';
+                                            foreach ($desc_list as $d) {
+                                                echo '<div style="border-bottom: 1px dashed #f1f5f9; padding: 2px 0;">• ' . htmlspecialchars($d) . '</div>';
+                                            }
+                                            echo '</div>';
+                                            echo '</details>';
+                                        } else {
+                                            echo '<span style="color:#cbd5e1;">-</span>';
+                                        }
+                                    }
 
-                                // --- SMART REMARKS ---
+                                // --- SMART REMARKS ---    
                                 elseif ($col == 'remarks') {
                                     $remarkText = $row[$col] ?? '';
                                     $limit = 30;

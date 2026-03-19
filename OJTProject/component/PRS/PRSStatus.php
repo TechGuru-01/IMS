@@ -1,5 +1,4 @@
 <?php
-// DATABASE CONNECTION & AUTH
 require_once "../../include/config.php"; 
 require_once "../../include/auth_checker.php";
 
@@ -7,7 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// --- MANUAL STATUS UPDATE LISTENER ---
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status_manual'])) {
     $ref = $_POST['ref_number'];
     $new_status = $_POST['new_status'];
@@ -21,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status_manual']
     }
 }
 
-// FILTERS & SESSION HANDLING
+
 if (isset($_GET['filter_month'])) {
     $_SESSION['selected_month'] = date('n', strtotime($_GET['filter_month']));
     $_SESSION['selected_year'] = date('Y', strtotime($_GET['filter_month']));
@@ -31,7 +30,7 @@ $m = $_SESSION['selected_month'] ?? (int)date('n');
 $y = $_SESSION['selected_year'] ?? (int)date('Y');
 $status_filter = $_GET['status_filter'] ?? 'all';
 
-// STATUS HELPER FUNCTION
+
 function getStatusClass($status) {
     $s = strtolower(trim($status ?? ''));
     switch ($s) {
@@ -46,7 +45,7 @@ function getStatusClass($status) {
     }
 }
 
-// COUNTS LOGIC
+
 $count_sql = "SELECT 
     COUNT(*) as total,
     SUM(CASE WHEN status = 'On Process' THEN 1 ELSE 0 END) as on_process,
@@ -67,8 +66,16 @@ if ($status_filter !== 'all') {
     $where_clause .= " AND r.status = '" . $conn->real_escape_string($status_filter) . "'";
 }
 
+$where_clause = "WHERE MONTH(r.pr_date) = $m AND YEAR(r.pr_date) = $y";
+
+if ($status_filter !== 'all') {
+    $where_clause .= " AND r.status = '" . $conn->real_escape_string($status_filter) . "'";
+}
+
+// ISAMA ANG $where_clause SA SQL STRING!
 $sql = "SELECT r.*, 
-        GROUP_CONCAT(i.material_name SEPARATOR ', ') as all_materials
+        GROUP_CONCAT(i.material_name SEPARATOR ', ') as all_materials,
+        GROUP_CONCAT(i.description SEPARATOR ', ') as all_descriptions
         FROM pr_reports r
         LEFT JOIN pr_items i ON r.ref_number = i.pr_ref_number
         $where_clause
@@ -76,6 +83,11 @@ $sql = "SELECT r.*,
         ORDER BY r.pr_id DESC";
 
 $result = $conn->query($sql); 
+
+// I-check kung may error sa SQL para 'di mag-crash ang page
+if (!$result) {
+    die("SQL Error: " . $conn->error);
+} 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -86,7 +98,8 @@ $result = $conn->query($sql);
     
     <link rel="stylesheet" href="../../style.css">
     <link rel="stylesheet" href="PRSStatus.css">
-    <link rel="stylesheet" href="new.css">
+    <link rel="stylesheet" href="reuseModal.css">
+     <link rel="stylesheet" href="newPRS.css">
     <link rel="stylesheet" href="../../pages/inventory/inventory.css"> 
     <link rel="stylesheet" href="../../component/navbar/nav-bar.css"> 
     <link rel="stylesheet" href="../../component/inventoryAlertBox/inventoryAlertsModal.css">
@@ -161,9 +174,10 @@ $result = $conn->query($sql);
                 <span class="material-symbols-outlined" style="font-size: 18px;">history</span> 
                 <span id="reuseText">Reuse</span>
             </button>
-            <button class="btn-action" onclick="openPRModal()" style="background-color: #007bff;">
-                <span class="material-symbols-outlined" style="font-size: 18px;">add_circle</span> New PRS
-                    </button>
+            <button type="button" onclick="openNewPRModal()" style="background:#072d7a; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:600; display:flex; align-items:center; gap:8px;">
+                <span class="material-symbols-outlined">add_circle</span>
+                Create New PR
+            </button>
                 </div>
             </div> <div class="status-content">
                 <?php include __DIR__ . "/PRSStatusListView.php"; ?>
@@ -171,10 +185,11 @@ $result = $conn->query($sql);
 
             <?php include __DIR__ . "/../../component/settings/settings.php"; ?>
             <?php include "./PRSModal.php"; ?>
-            <?php include "./new.php"; ?>   
+            <?php include "./newPRS.php"; ?>   
 
-        </div> <script src="./reuseModal.js"></script>
-        <script src="./new.js"></script>
+        </div> 
+        <script src="./reuseModal.js"></script>
+        <script src="./newPRS.js"></script>
         <script src="../../component/settings/settings.js"></script>
         <script src="../../component/search.js"></script>
         <script src="./PRSStatus.js"></script>

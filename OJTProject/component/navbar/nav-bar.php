@@ -1,8 +1,10 @@
 
     <header>
       <nav class="nav-bar">
-        <div class="logo-text">
-          <a href="../../pages/dashBoard/dashBoard.php">LOGO.</a>
+        <div class="logo">
+          <a href="../../pages/dashBoard/dashBoard.php">
+          <img src="../../src/hepc.jpg" alt="logo">
+          </a>
         </div>
         
         <div class="menu-links">

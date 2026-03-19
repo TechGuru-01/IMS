@@ -1,5 +1,4 @@
 <?php
-// 1. RATES FETCHING
 $usd_rate = 1; $jpy_rate = 1;
 $res_settings = $conn->query("SELECT setting_key, setting_value FROM settings WHERE setting_key IN ('dollar_rate', 'yen_rate')");
 if($res_settings) {
@@ -9,7 +8,7 @@ if($res_settings) {
     }
 }
 
-// 2. REFERENCE NUMBER GENERATION
+
 $check_max = "SELECT MAX(pr_id) as last_id FROM pr_reports";
 $res_max = $conn->query($check_max);
 $row_max = $res_max->fetch_assoc();
@@ -29,25 +28,22 @@ $generated_ref = "JIG-{$datePart}-{$report_num}";
         box-sizing: border-box;
     }
 
-    /* Eto yung sikreto: Fixed Grid para sa Header at Row */
-    /* 2.5fr (Material) | 1.8fr (Maker) | 0.8fr (Qty) | 1.5fr (Price) | 1.5fr (Subtotal) | 45px (Delete Button) */
-    .pr-items-grid {
-        display: grid;
-        grid-template-columns: 40px 1.5fr 2fr 1.2fr 70px 110px 120px 45px;
-        gap: 10px;
-        align-items: center;
-    }
+.pr-items-grid {
+    display: grid;
+    grid-template-columns: 20px 1fr 1fr 0.8fr 70px 50px 80px 100px 35px !important;
+    gap: 10px;
+    align-items: center;
+}
 
-    .pr-header-labels {
-        padding-bottom: 10px;
-        border-bottom: 2px solid #e2e8f0;
-        font-weight: bold;
-        font-size: 12px;
-        color: #475569;
-        margin-bottom: 10px;
-    }
 
-    /* Para hindi dikit sa gilid yung delete button header */
+.pr-header-labels {
+    padding: 10px 0;
+    border-bottom: 2px solid #e2e8f0;
+    font-weight: bold;
+    font-size: 11px;
+    color: #475569;
+    text-transform: uppercase;
+}
     .text-right { text-align: right; }
     .text-center { text-align: center; }
 </style>
@@ -74,22 +70,6 @@ $generated_ref = "JIG-{$datePart}-{$report_num}";
                                class="pr-input-style" placeholder="Suffix (e.g. URGENT, REUSE)" style="flex:1;">
                     </div>
                 </div>
-
-                <div style="grid-column: span 2;">
-                    <label style="font-weight:600; font-size:13px;">Items to Process</label>
-                    <div id="dynamic_items_container" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:10px; margin-top:5px;">
-                        <div style="display:grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap:10px; padding-bottom:10px; border-bottom:2px solid #e2e8f0; font-weight:bold; font-size:12px; color:#475569;">
-                            <div>Material Name</div>
-                            <div>Maker</div>
-                            <div>Qty</div>
-                            <div>Price</div>
-                            <div>Subtotal</div>
-                        </div>
-                        <div id="items_list_body" style="max-height:250px; overflow-y:auto; margin-top:10px;">
-                            </div>
-                    </div>
-                </div>
-
                 <div>
                     <label style="font-weight:600; font-size:13px;">PR Date</label>
                     <input type="date" name="pr_date" id="modal_pr_date" class="pr-input-style" value="<?= date('Y-m-d') ?>" required>
@@ -98,10 +78,31 @@ $generated_ref = "JIG-{$datePart}-{$report_num}";
                 <div>
                     <label style="font-weight:600; font-size:13px;">Attention to</label>
                     <input list="company_options" name="company" id="modal_company" class="pr-input-style" required>
-                    <datalist id="company_options">
-                        <option value="Ms Carla"><option value="Mr Mark Agno">
-                    </datalist>
                 </div>
+                <div style="grid-column: span 2; display: flex; justify-content: space-between; align-items: flex-end; margin-top: 15px;">
+                        <label style="font-weight:600; font-size:14px; color:#072d7a;">📦 Item Details</label>
+                        <button type="button" onclick="addNewRow()" style="background:#10b981; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600; transition: 0.2s; display: flex; align-items: center; gap: 5px;">
+                            <span style="font-size:16px;">+</span> Add New Item
+                        </button>
+                    </div>
+
+                    <div style="grid-column: span 2; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-top: 5px; background: #fcfcfc;">
+                        <div class="pr-items-grid pr-header-labels" style="border-bottom: 2px solid #cbd5e1; padding-bottom: 8px;">
+                            <div class="text-center">No.</div>
+                            <div>Item Name</div>
+                            <div>Description/Specs</div>
+                            <div>Maker</div>
+                            <div>UOM</div>
+                            <div class="text-center">Qty</div>
+                            <div>Unit Price</div>
+                            <div class="text-right">Subtotal</div>
+                            <div></div> </div>
+                        
+                        <div id="items_list_body" style="max-height:300px; overflow-y:auto; padding-top: 10px;">
+                            </div>
+                    </div>
+
+               
 
                 <div>
                     <label style="font-weight:600; font-size:13px;">Currency</label>
@@ -110,14 +111,6 @@ $generated_ref = "JIG-{$datePart}-{$report_num}";
                         <option value="USD" data-rate="<?= $usd_rate ?>">USD ($)</option>
                         <option value="JPY" data-rate="<?= $jpy_rate ?>">JPY (¥)</option>
                     </select>
-                </div>
-
-                <div>
-                    <label style="font-weight:600; font-size:13px;">Unit of Measurement</label>
-                    <input list="uom_options" name="uom" id="modal_uom" class="pr-input-style" required>
-                    <datalist id="uom_options">
-                        <option value="PC/s"><option value="Sheet">
-                    </datalist>
                 </div>
 
                 <div>
@@ -148,7 +141,7 @@ $generated_ref = "JIG-{$datePart}-{$report_num}";
                     <button type="button" onclick="closePRModal()" style="padding:10px 20px; border-radius:8px; cursor:pointer; background:white; border:1px solid #cbd5e1;">Cancel</button>
                     <button type="submit" name="bulk_resolve" onclick="return prepareSubmission();" 
                             style="background:#072d7a; color:white; border:none; padding:10px 25px; border-radius:8px; cursor:pointer; font-weight:600;">
-                        🚀 Save & Download
+                            Save & Download
                     </button>
                 </div>
             </div>
