@@ -38,6 +38,7 @@ include_once "../../component/selectMonth/carryOver.php";
             <div>
                 <h2 style="font-weight: 800; color: #072d7a;">INVENTORY LIST</h2>
                 <span class="badge-month"><?= date("F", mktime(0, 0, 0, $selectedMonth, 1)) ?> <?= $selectedYear ?></span>
+                
             </div>
             
             <form method="GET" id="yearForm">
@@ -56,6 +57,7 @@ include_once "../../component/selectMonth/carryOver.php";
                     
       
     </div>
+    <script src="../../component/currency/countUp.js"></script>
     <script src="../../component/settings/settings.js"></script>
     <script src="inventory.js" defer></script>
     <script src="../../component/search.js" defer></script>

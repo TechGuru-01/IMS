@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const tableClone = mainTable.cloneNode(true);
     tableClone.id = "editorTable";
 
-
     const rawHeaders = Array.from(mainTable.querySelectorAll("thead th")).map(
       (th) => th.getAttribute("data-column") || "",
     );
@@ -52,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
       row.querySelectorAll("td").forEach((td, i) => {
         const h = rawHeaders[i - 1]; // Offset dahil sa in-insert na checkbox
 
-        
         const readOnlyCols = [
           "select",
           "id",
@@ -60,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
           "beginning_inventory",
           "received_qty",
           "is_acknowledged",
-          "item_uuid", 
+          "item_uuid",
         ];
 
         if (h && !readOnlyCols.includes(h)) {

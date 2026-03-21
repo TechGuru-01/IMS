@@ -1,6 +1,6 @@
 <div class="ubuntu-fab-container">
     <div class="ubuntu-menu" id="ubuntuMenu">
-        <a href="/OJTProject/component/PRS/PRSStatus.php">
+        <a href="/OJTProject/pages/PRS/prsStatus.php">
         <button class="ubuntu-item">
             <span class="material-symbols-outlined">
             list_alt_check

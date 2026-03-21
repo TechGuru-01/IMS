@@ -1,3 +1,32 @@
+let isReuseMode = false;
+function toggleReuseMode() {
+  isReuseMode = !isReuseMode;
+  const btn = document.getElementById("reuseBtn");
+  const text = document.getElementById("reuseText");
+  const rows = document.querySelectorAll("tr[data-ref]");
+
+  if (isReuseMode) {
+    if (btn) btn.style.background = "#dc3545";
+    if (text) text.innerText = "Cancel Reuse";
+    rows.forEach((row) => {
+      row.style.cursor = "pointer";
+      row.style.outline = "2px dashed #dc3545";
+      row.onclick = function () {
+        const refToCopy = this.getAttribute("data-ref");
+        if (refToCopy) fetchAndPopulateModal(refToCopy);
+      };
+    });
+  } else {
+    if (btn) btn.style.background = "#28a745";
+    if (text) text.innerText = "Reuse";
+    rows.forEach((row) => {
+      row.style.cursor = "default";
+      row.style.outline = "none";
+      row.onclick = null;
+    });
+  }
+}
+
 function createItemRow(
   index,
   name = "",
@@ -35,6 +64,24 @@ function createItemRow(
         </div>
     `;
 }
+function addNewRow() {
+  const listBody = document.getElementById("items_list_body");
+  if (!listBody) return;
+
+  if (listBody.innerHTML.includes("No items found")) {
+    listBody.innerHTML = "";
+  }
+
+  const currentIndex = listBody.querySelectorAll(".item-row").length;
+  const newRowHTML = createItemRow(currentIndex, "", "", "", "", "", "");
+  listBody.insertAdjacentHTML("beforeend", newRowHTML);
+
+  const lastRow = listBody.lastElementChild;
+  const nameInput = lastRow.querySelector(".item-name-field");
+  if (nameInput) nameInput.focus();
+
+  calculateGrandTotal();
+}
 
 function removePRItem(btn) {
   const row = btn.closest(".item-row");
@@ -48,6 +95,59 @@ function removePRItem(btn) {
     });
 
     calculateGrandTotal();
+  }
+}
+
+async function fetchAndPopulateModal(refToCopy) {
+  try {
+    const response = await fetch(
+      `./getPRSDetail.php?ref=${encodeURIComponent(refToCopy)}`,
+    );
+    const data = await response.json();
+
+    if (data.success) {
+      const header = data.header;
+
+      document.getElementById("modal_company").value = header.company || "";
+      document.getElementById("modal_remarks").value = header.remarks || "";
+      document.getElementById("currency_type").value = header.currency || "PHP";
+      document.getElementById("modal_pr_date").value = new Date()
+        .toISOString()
+        .split("T")[0];
+
+      const listBody = document.getElementById("items_list_body");
+      listBody.innerHTML = "";
+
+      if (data.items && data.items.length > 0) {
+        data.items.forEach((item, index) => {
+          listBody.insertAdjacentHTML(
+            "beforeend",
+            createItemRow(
+              index,
+              item.material_name,
+              item.description,
+              item.maker,
+              item.quantity,
+              item.unit_price,
+            ),
+          );
+        });
+      } else {
+        listBody.innerHTML =
+          '<p style="text-align:center; color:#94a3b8; padding:10px;">No items found.</p>';
+      }
+
+      document.getElementById("modal_title").innerText =
+        "♻️ Reuse PR: " + refToCopy;
+      document.getElementById("prModal").style.display = "flex";
+
+      calculateGrandTotal();
+      if (isReuseMode) toggleReuseMode();
+    } else {
+      alert("Error: " + data.message);
+    }
+  } catch (err) {
+    console.error("Critical Error:", err);
   }
 }
 
@@ -78,108 +178,12 @@ function calculateGrandTotal() {
 function closePRModal() {
   document.getElementById("prModal").style.display = "none";
 }
-function openPRModal() {
-  const selected = document.querySelectorAll(
-    'input[name="acknowledge_ids[]"]:checked',
-  );
-  const itemsListBody = document.getElementById("items_list_body");
 
-  if (selected.length === 0) {
-    alert("Pumili muna ng items sa inventory!");
-    return;
-  }
-
-  itemsListBody.innerHTML = "";
-  let hasUrgent = false;
-
-  selected.forEach((cb, index) => {
-    const row = cb.closest("tr");
-    const itemName = row.cells[1].innerText.replace("OUT OF STOCK", "").trim();
-    const itemDesc = row.querySelector(".desc-cell")
-      ? row.querySelector(".desc-cell").innerText.trim()
-      : "";
-
-    if (row.innerText.includes("OUT OF STOCK")) hasUrgent = true;
-
-    itemsListBody.insertAdjacentHTML(
-      "beforeend",
-      createItemRow(index, itemName, itemDesc, cb.value),
-    );
-  });
-
-  document.getElementById("admin_suffix").value = hasUrgent ? "URGENT" : "";
-  document.getElementById("form_mode").value = "create";
-  document.getElementById("modal_title").innerText =
-    "📝 Prepare Purchase Request";
-  document.getElementById("prModal").style.display = "flex";
-
-  calculateGrandTotal();
-}
-
-function prepareSubmission() {
-  const modal = document.getElementById("prModal");
-  // Selects ALL input, select, and textarea elements inside the form
-  const allInputs = modal.querySelectorAll("input, select, textarea");
-  const itemsList = document.querySelectorAll(".item-row");
-
-  let isFormValid = true;
-  let firstErrorElement = null;
-
-  // 1. Check if there are any items at all
-  if (itemsList.length === 0) {
-    alert("Error: You must select at least one item from the inventory.");
-    return false;
-  }
-
-  allInputs.forEach((input) => {
-    // Skip hidden inputs (like form_mode or final_ref) as they are auto-filled
-    if (input.type === "hidden") return;
-
-    const value = input.value.trim();
-
-    // Validation Rule: Field must not be empty, and numbers must be > 0
-    if (value === "" || (input.type === "number" && parseFloat(value) <= 0)) {
-      isFormValid = false;
-      input.style.border = "2px solid #ef4444"; // Bright Red Border
-      input.style.backgroundColor = "#fff1f2"; // Light Red Background
-
-      if (!firstErrorElement) firstErrorElement = input;
-    } else {
-      // Reset style if it's filled
-      input.style.border = "1px solid #cbd5e1";
-      input.style.backgroundColor = "white";
-    }
-  });
-
-  // 3. Final Check
-  if (!isFormValid) {
-    alert(
-      "Incomplete Form: Please fill out ALL fields, including Remarks and Item Details.",
-    );
-
-    // Automatically scroll/focus on the first empty box found
-    if (firstErrorElement) firstErrorElement.focus();
-
-    return false;
-  }
-  const genRef = document.getElementById("gen_ref").value;
-  const suffix = document.getElementById("admin_suffix").value.trim();
-  document.getElementById("final_ref").value = suffix
-    ? `${genRef}-${suffix}`
-    : genRef;
-  const submitBtn = document.querySelector('button[name="bulk_resolve"]');
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.innerText = "Processing...";
-  }
-
-  setTimeout(() => {
-    window.location.reload();
-  }, 2500);
-
-  return true;
-}
-function closePRModal() {
-  document.getElementById("prModal").style.display = "none";
+function openNewPRModal() {
   document.getElementById("exportForm").reset();
+  document.getElementById("items_list_body").innerHTML = "";
+  addNewRow();
+
+  document.getElementById("prModal").style.display = "flex";
 }
+

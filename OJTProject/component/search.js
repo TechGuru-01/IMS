@@ -1,29 +1,33 @@
 window.filterTable = function (type) {
-  let inputId, tableId;
+  let inputId, containerId;
+
+  // Determine kung anong search bar ang ginagamit
   if (type === "modal") {
     inputId = "modalSearch";
-    tableId = "editorTable";
+    containerId = "editorTableContainer"; // Dapat naka-wrap ang table mo sa div na 'to
   } else {
     inputId = "inventorySearch";
-    tableId = "inventoryTable";
+    containerId = "inventoryTableContainer"; // Dito i-re-render ang inventory table
   }
 
   const input = document.getElementById(inputId);
-  const table = document.getElementById(tableId);
+  if (!input) return;
 
-  if (!input || !table) return;
+  const filter = input.value;
 
-  const filter = input.value.toLowerCase();
-  const tr = table.getElementsByTagName("tr");
+  // Kunin ang current Month at Year mula sa hidden inputs o URL params
+  const urlParams = new URLSearchParams(window.location.search);
+  const month = urlParams.get("month") || new Date().getMonth() + 1;
+  const year = urlParams.get("year") || new Date().getFullYear();
 
-  for (let i = 1; i < tr.length; i++) {
-    const row = tr[i];
-    const text = row.textContent || row.innerText;
-
-    if (text.toLowerCase().indexOf(filter) > -1) {
-      row.style.display = "";
-    } else {
-      row.style.display = "none";
-    }
-  }
+  // AJAX Fetch: Tatawagin ang PHP file para sa bagong records
+  // Gagamit tayo ng debounce (optional) o diretso na
+  fetch(
+    `fetch_inventory.php?search=${encodeURIComponent(filter)}&month=${month}&year=${year}`,
+  )
+    .then((response) => response.text())
+    .then((html) => {
+      document.getElementById(containerId).innerHTML = html;
+    })
+    .catch((err) => console.warn("Search Error:", err));
 };

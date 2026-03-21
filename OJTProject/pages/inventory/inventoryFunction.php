@@ -5,6 +5,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Kunin ang pangalan ng user para sa history. Palitan mo ang 'username' kung iba ang tawag sa session mo.
+$currentUser = $_SESSION['username'] ?? 'System';
+
 // --- SESSION FIX (Default to Last Selected) ---
 if (isset($_GET['month'])) {
     $_SESSION['selected_month'] = (int)$_GET['month'];
@@ -22,7 +25,6 @@ $selectedMonth = $_SESSION['selected_month'];
 $selectedYear = $_SESSION['selected_year'];
 
 // --- DATABASE HELPER ---
-// 'item_uuid' is excluded from $cols to keep it hidden from the main table UI
 $cols = ['category', 'cabinet', 'item', 'description', 'beginning_inventory', 'received_qty', 'quantity', 'min_quantity', 'price', 'is_acknowledged'];
 
 function verifyColumn($conn, $colName){
@@ -86,7 +88,12 @@ if (isset($_POST['addItem'])){
         $input_qty, $min_quantity, $price, $targetDate, $item_uuid
     );
     
-    $stmt->execute();
+    if($stmt->execute()){
+        // --- HISTORY LOGIC PARA SA ADD/RESTOCK ---
+        $stmtHist = $conn->prepare("INSERT INTO history (name, item, description, quantity_in, quantity_out, min_quantity) VALUES (?, ?, ?, ?, 0, ?)");
+        $stmtHist->bind_param("sssii", $currentUser, $item, $description, $input_qty, $min_quantity);
+        $stmtHist->execute();
+    }
 
     header("Location: inventory.php?keepOpen=1");
     exit();
@@ -98,12 +105,15 @@ $json = json_decode($input, true);
 if (isset($json['updateData'])){
     foreach($json['updateData'] as $row){
         $id = (int)$row['id'];
-        $updateParts = [];
         
-        $current = $conn->query("SELECT quantity, min_quantity FROM inventory WHERE id = $id")->fetch_assoc();
+        // Kunin ang current state para sa history comparison
+        $current = $conn->query("SELECT item, description, quantity, min_quantity FROM inventory WHERE id = $id")->fetch_assoc();
         $oldQty = (int)($current['quantity'] ?? 0);
         $oldMin = (int)($current['min_quantity'] ?? 0);
+        $itemName = $current['item'];
+        $itemDesc = $current['description'];
 
+        $updateParts = [];
         foreach($row as $key => $val){
             $cleanCol = verifyColumn($conn, $key);
             if ($cleanCol && !in_array($cleanCol, ['is_acknowledged', 'item_uuid', 'id'])){
@@ -114,7 +124,19 @@ if (isset($json['updateData'])){
 
         if(!empty($updateParts)){
             $newQty = isset($row['quantity']) ? (int)$row['quantity'] : $oldQty;
-            if ($newQty <= $oldMin && $oldQty > $oldMin) {
+            $newMin = isset($row['min_quantity']) ? (int)$row['min_quantity'] : $oldMin;
+
+            // --- HISTORY LOGIC PARA SA SYNC CHANGES ---
+            if ($newQty != $oldQty) {
+                $qty_in = ($newQty > $oldQty) ? ($newQty - $oldQty) : 0;
+                $qty_out = ($newQty < $oldQty) ? ($oldQty - $newQty) : 0;
+
+                $stmtHist = $conn->prepare("INSERT INTO history (name, item, description, quantity_in, quantity_out, min_quantity) VALUES (?, ?, ?, ?, ?, ?)");
+                $stmtHist->bind_param("sssiii", $currentUser, $itemName, $itemDesc, $qty_in, $qty_out, $newMin);
+                $stmtHist->execute();
+            }
+
+            if ($newQty <= $newMin && $oldQty > $newMin) {
                 $updateParts[] = "`is_acknowledged` = 0";
             }
 

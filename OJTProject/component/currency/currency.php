@@ -64,7 +64,7 @@ $yenTotal    = ($y_rate > 0) ? ($peso / $y_rate) : 0;
                 <button type="submit" name="update_dollar">Set</button>
             </form> 
         </div>
-        <h1>$<?= number_format($dollarTotal, 2) ?></h1>
+       <h1 class="count-up" data-target="<?= $dollarTotal ?>">$0.00</h1>
 
     </div>
 </div>
@@ -78,7 +78,7 @@ $yenTotal    = ($y_rate > 0) ? ($peso / $y_rate) : 0;
                 <button type="submit" name="update_yen">Set</button>
             </form> 
         </div>
-        <h1>¥<?= number_format($yenTotal, 2) ?></h1>
+       <h1 class="count-up" data-target="<?= $yenTotal ?>">¥0.00</h1>
 
     </div>
 </div>

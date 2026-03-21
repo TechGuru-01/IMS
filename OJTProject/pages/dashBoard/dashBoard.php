@@ -25,6 +25,7 @@ $generated_ref = "JIG-{$datePart}-{$report_num}";
     <link rel="stylesheet" href="../../component/inventoryAlertBox/inventoryAlerts.css">
     <link rel="stylesheet" href="../../component/graphBox/graph.css">
     <link rel="stylesheet" href="../../component/settings/settings.css">
+    <link rel="stylesheet" href="../../component/inventoryAlertBox/inventoryAlerts.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />  
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 </head>
@@ -48,6 +49,7 @@ $generated_ref = "JIG-{$datePart}-{$report_num}";
 
     <script src="../../component/inventoryAlertBox/inventoryAlerts.js"></script>
     <script src="../../component/inventoryAlertBox/inventoryAlertsModal.js"></script>
+    <script src="../../component/currency/countUp.js"></script>
     <script src="../../component/settings/settings.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 

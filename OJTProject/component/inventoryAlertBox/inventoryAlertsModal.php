@@ -22,7 +22,6 @@ $generated_ref = "JIG-" . date('Ymd') . "-" . $report_num;
 <style>
     .pr-items-grid {
         display: grid;
-        /* Balanced grid columns to match row inputs */
         grid-template-columns: 30px 1.5fr 1.8fr 1fr 1fr 70px 90px 120px 40px;
         gap: 10px;
         align-items: center;
@@ -125,10 +124,10 @@ $generated_ref = "JIG-" . date('Ymd') . "-" . $report_num;
 
                 <div><label style="font-weight:600; font-size:13px;">RM / FG</label><input list="RMFG_options" name="rm_fg" id="modal_rmfg" class="pr-input-style" required></div>
                 <div><label style="font-weight:600; font-size:13px;">Type</label><input list="ToR_options" name="ToR" id="modal_tor" class="pr-input-style" required></div>
-
-                <div style="grid-column: span 2;">
-                    <label style="font-weight:600; font-size:13px;">Grand Total (<span id="currency_label">PHP</span>)</label>
-                    <input type="number" step="0.01" id="pr_total" name="total_amount" class="pr-input-style" readonly style="background:#f1f5f9; font-weight:700; color:#072d7a; font-size:1.2rem;">
+                <div>
+                        <label style="font-weight:600; font-size:13px;">Total Amount (<span id="currency_label">PHP</span>)</label>
+                        <input type="number" step="0.01" id="pr_total" name="total_amount" class="pr-input-style" readonly 
+                            style="background:#f1f5f9; font-weight:700; color:#072d7a;">
                 </div>
 
                 <div style="grid-column: span 2;">
