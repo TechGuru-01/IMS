@@ -2,7 +2,7 @@
         <div class="header-left">
             <p class="grand-total-card">
                 <span class="label">Monthly Grand Total</span>
-                <span class="amount">₱<?= number_format($grandTotal, 2) ?></span>
+                <span class="amount count-up" data-target="<?= $grandTotal ?>">₱0.00</span>
             </p>
         </div>
         <div class="header-right-actions">
