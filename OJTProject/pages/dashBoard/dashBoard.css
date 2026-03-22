@@ -60,3 +60,36 @@
   width: 100%;
   height: 100%;
 }
+
+@media (max-width: 1024px) {
+  .main {
+    height: auto;
+    padding: 0.5rem;
+  }
+
+  .box {
+    display: flex;
+    flex-direction: column; 
+    height: auto;
+    grid-template-rows: auto; 
+    grid-template-areas: none; 
+  }
+
+  .box-1 {
+    grid-template-columns: 1fr; 
+    height: auto;
+  }
+
+  .box-1 .box-content {
+    height: 200px; 
+  }
+
+  .box-3, .box-4 {
+    height: 400px; 
+    min-height: 300px;
+  }
+
+  .box-content:hover {
+    transform: none; 
+  }
+}
