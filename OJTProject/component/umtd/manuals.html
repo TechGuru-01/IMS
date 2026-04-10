@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="manuals.css">
+    <title>JIG IMS | Documentation Hub</title>
+   
+</head>
+<body>
+
+<div class="container">
+    <h2>Project Manuals</h2>
+    <ul id="file-list">
+        </ul>
+</div>
+
+<footer>
+    &copy; 2026 <strong>JIG IMS</strong><br>
+    <small>Developed by Elijah Boon & Chaz Honrada</small>
+</footer>
+
+<script>
+    const myFiles = [
+        "JIG IMS User Manual.pdf",
+        "Technical Documentation.pdf",
+    ];
+
+    const listContainer = document.getElementById('file-list');
+
+    (() => {
+        if (myFiles.length === 0) {
+            listContainer.innerHTML = '<p style="color: #999;">No documents found.</p>';
+            return;
+        }
+
+        myFiles.forEach(fileName => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <a href="manuals/${fileName}" target="_blank" class="file-item">
+                    <span class="file-icon">📕</span>
+                    <div class="file-info">
+                        <strong>${fileName}</strong>
+                        <small>Tap to view document</small>
+                    </div>
+                </a>
+            `;
+            listContainer.appendChild(li);
+        });
+    })();
+</script>
+
+</body>
+</html>

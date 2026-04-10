@@ -1,0 +1,43 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+:root {
+ 
+  --primary-color: linear-gradient(145deg, #000c18, #001f3f);
+  --background-color: rgb(216, 204, 204);
+  --accent-slate: #334155;
+  --main-white: #ffffff;
+  --app-bg: #f8f9fa;
+  --inv-main-bg: #ffffff;
+  --inv-border: #e2e8f0;
+  --inv-search-bg: #f1f5f9;
+  --grand-total-bg: #f8fafc;
+  --grand-total-border: #2563eb;
+  --text-muted: #64748b;
+  --text-dark: #1e293b;
+  --excel-green: #185c37;
+  --btn-dark: #0f172a;
+  --danger-red: #ed0505;
+
+ 
+  --tab-hover-bg: rgba(37, 99, 235, 0.05);
+  --tab-hover-text: rgb(197, 211, 0);
+  --primary-blue-solid: #2563eb; 
+  --primary-blue-dark: #1d4ed8; 
+  --fab-main-bg: #1e40af; 
+  --danger-alt: #ef4444; 
+  --modal-overlay: rgba(0, 0, 0, 0.5);
+}
+
+
+html,
+body {
+  max-height: 85vh;
+  width: 100%;
+  background-color: var(--primary-color);
+}
+

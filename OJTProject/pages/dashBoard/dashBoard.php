@@ -1,0 +1,54 @@
+<?php
+require_once '../../include/auth_checker.php';
+include "../../include/config.php";
+require_once "../../include/inventoryAlertsModalFunction.php";
+require_once "../../include/graphFunction.php";
+require_once "../../include/currencyFunction.php";
+?>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEPC JIG IMS | Dashboard</title>
+    <link rel="stylesheet" href="../../style.css" /> 
+    <link rel="stylesheet" href="../../component/navBar/nav-bar.css" />
+    <link rel="stylesheet" href="dashBoard.css" />
+    <link rel="stylesheet" href="../../component/inventoryAlertBoxModal/inventoryAlertModal.css">
+    <link rel="stylesheet" href="../../component/currency/currency.css">
+    <link rel="stylesheet" href="../../component/graphBox/graph.css">
+    <link rel="stylesheet" href="../../component/utils/utils.css">
+    <link rel="stylesheet" href="../../component/inventoryAlertBox/inventoryAlerts.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />  
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+</head>
+<body>
+    <?php include "../../component/navbar/nav-bar.php"; ?>
+    <section class="main">
+        <div class="box">
+            <div class="box-1">
+                <?php include __DIR__ . "/../../component/currency/currency.php"; ?>
+            </div>
+             
+            <?php include __DIR__ . "/../../component/inventoryAlertBox/inventoryAlerts.php"; ?>
+            <?php include "../../component/inventoryAlertBoxModal/inventoryAlertsModal.php"; ?> 
+            
+            <?php include __DIR__ . "/../../component/graphBox/graph.php"; ?> 
+        </div>
+
+        <?php include __DIR__ . "/../../component/utils/utils.php"; ?>
+    </section>
+    <script src="../../component/inventoryAlertBox/inventoryAlerts.js"></script>
+    <script src="../../component/inventoryAlertBoxModal/inventoryAlertsModal.js"></script>
+    <script src="../../component/currency/countUp.js"></script>
+    <script src="../../component/utils/utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        var serverChartData = <?php echo json_encode($chartData ?? []); ?>;
+        var serverView = "<?php echo $view ?? 'weekly'; ?>";
+    </script>
+
+    <script src="../../component/graphBox/chart.js"></script>
+</body>
+</html>
